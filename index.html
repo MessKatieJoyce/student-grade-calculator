@@ -1,31 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Simple Grading System</title>
-  
-  <style>
-  body{
-    font-family: "Segoe UI", Arial, sans-serif;
+    <title>Simple Grading System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+    
+    body{
+    font-family:"Segoe UI", Arial, sans-serif;
     background:#1e2228;
     margin:0;
     color:#e4e6eb;
-  }
-  
-  .topbar{
+}
+
+/* TOP BAR */
+
+.topbar{
     background:#11151a;
     border-bottom:3px solid #2c3e50;
     padding:18px 30px;
     box-shadow:0 3px 8px rgba(0,0,0,0.4);
-  }
-  
-  .topbar h3{
+}
+
+.topbar h3{
     margin:0;
     font-weight:500;
     letter-spacing:.5px;
     line-height:1.5;
-  }
+}
 
-  .container{
+/* CONTAINERS */
+
+.container{
     background:#2a2f36;
     padding:25px;
     margin:30px auto;
@@ -33,267 +40,299 @@
     max-width:900px;
     border-radius:10px;
     box-shadow:0 6px 15px rgba(0,0,0,0.35);
-  }
+    text-align:center;
+}
 
-  .container h3{
+.container h3{
     margin-top:0;
     font-weight:600;
     border-bottom:2px solid #3a4048;
-     padding-bottom:10px;
-  } 
-  
-  .subject-input{
+    padding-bottom:10px;
+}
+
+.containergrade{
+    background:#2a2f36;
+    padding:25px;
+    margin:30px auto;
+    width:80%;
+    max-width:900px;
+    border-radius:10px;
+    box-shadow:0 6px 15px rgba(0,0,0,0.35);
+}
+
+/* SUBJECT INPUT */
+
+.subject-input{
     margin-bottom:10px;
-  }
-  
-  /* TABLE */
+    width:100%;
+
+}
+
+#subjectsContainer{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:100%;
+}
+
+/* INPUTS */
+
+input{
+     padding:10px;
+    width:100%;
+    box-sizing:border-box;
+    border-radius:6px;
+    border:1px solid #444;
+    background:#1e2228;
+    color:#e4e6eb;
+}
+
+input:focus{
+    outline:none;
+    border-color:#4a90e2;
+}
+
+/* BUTTONS */
+
+button{
+    padding:9px 16px;
+    margin-top:12px;
+    margin-right:8px;
+    border:none;
+    border-radius:6px;
+    background:#34495e;
+    color:white;
+    font-weight:500;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+button:hover{
+    background:#3e5f7a;
+}
+
+button:active{
+    transform:scale(.96);
+}
+
+/* REMOVE SUBJECT BUTTON */
+
+.remove-subject{
+    background:none;
+    border:none;
+    color:#c0392b;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.remove-subject:hover{
+    color:#e74c3c;
+}
+
+/* TABLE */
 
 .table-wrapper{
-  overflow-x:auto;
-  width:100%;
+    overflow-x:auto;
+    width:100%;
 }
 
 table{
-  width:max-content;
-  min-width:100%;
-  border-collapse:collapse;
-  margin-top:20px;
+    width:max-content;
+    min-width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
 }
 
-  
-  
-  th,td{
-    border:1px solid #ccc;
-    padding:5px;
-    text-align:center;
-  }
-  
-  th{
-    background:black;
-    color:white;
-  }
-
-  /* HEADER */
+/* TABLE HEADER */
 
 th{
-  background:#0f1419;
-  color:#f0f3f6;
-  padding:10px;
-  font-weight:600;
-  border-bottom:2px solid #3a4048;
+    background:#0f1419;
+    color:#f0f3f6;
+    padding:10px 5px;
+    font-weight:600;
+    border-bottom:2px solid #3a4048;
 }
 
-/* CELLS */
+/* TABLE CELLS */
+
+th,
+td{
+    border:1px solid #ccc;
+    text-align:center;
+}
 
 td{
-  padding:10px;
-  border-bottom:1px solid #3a4048;
+    padding:10px;
+    border-bottom:1px solid #3a4048;
 }
 
 /* ZEBRA ROWS */
 
 tbody tr:nth-child(even){
-  background:#242a31;
+    background:#242a31;
 }
 
 tbody tr:hover{
-  background:#313740;
+    background:#313740;
 }
-  
-  /* STICKY NAME COLUMN */
+
+/* STICKY NAME COLUMN */
 
 th:first-child,
 td:first-child{
-  position:sticky;
-  left:0;
-  background:#1b2026;
-  z-index:2;
+    position:sticky;
+    left:0;
+    background:#1b2026;
+    z-index:2;
 }
 
 /* NAME INPUT */
 
 td:first-child input{
-  width:150px;
+    width:90%;
 }
-  
-  /* GRADE INPUT */
+
+/* GRADE INPUT */
 
 td input[type="number"]{
-  width:65px;
-  text-align:center;
-  display:block;
-  margin:auto;
+    width:65px;
+    text-align:center;
+    display:block;
+    margin:auto;
 }
 
 /* DELETE BUTTON IN TABLE */
 
 td button{
-  background:#7a2e2e;
+    background:#7a2e2e;
 }
 
 td button:hover{
-  background:#9b3a3a;
-}
-  
-
-  input{
-  padding:8px;
-  width:90%;
-  border-radius:6px;
-  border:1px solid #444;
-  background:#1e2228;
-  color:#e4e6eb;
+    background:#9b3a3a;
 }
 
-input:focus{
-  outline:none;
-  border-color:#4a90e2;
-}
+/* MOBILE RESPONSIVE */
 
-  button{
-  padding:9px 16px;
-  margin-top:12px;
-  margin-right:8px;
-  border:none;
-  border-radius:6px;
-  background:#34495e;
-  color:white;
-  font-weight:500;
-  cursor:pointer;
-  transition:0.2s;
-}
+@media screen and (max-width:768px){
 
-button:hover{
-  background:#3e5f7a;
-}
-
-button:active{
-  transform:scale(.96);
-}
-  
-  @media screen and (max-width: 768px){
-    .container{
-      margin:20px auto;
-      width:70px;
-      padding:20px;
-      justify-content: center;
-    }
-    
     .topbar{
-      font-size:16px;
-      padding:15px;
+        font-size:16px;
+        padding:15px;
     }
-    
+
+    .container{
+        width:50%;
+        padding:20px;
+        margin:20px auto;
+    }
+
     button{
-      width:41%;
-      padding:9px 16px;
-      margin-top:8px;
-      margin-right:2px;
-      border:none;
-      border-radius:6px;
-      background:#34495e;
-      color:white;
-      font-weight:500;
-      cursor:pointer;
-      transition:0.2s;
+        width:100%;
+        padding:9px 19px;
+        margin-top:8px;
+        margin-right:2px;
+        font-size: 11px;
     }
 
     .button-group{
+        flex-direction:column;
         display:flex;
+        justify-content:center;
         gap:12px;
         margin-top:15px;
         flex-wrap:wrap;
     }
+
     
+
     .subject-input input{
-      width:80%;
+        width:100%;
     }
-    
+
+    .containergrade{
+        width:90%;
+        max-width:450px;
+    }
+
     td input[type="text"]{
-      width:130px;
+        width:90%;
     }
-    
+
     td input[type="number"]{
-      width:50px;
+        width:50px;
     }
-    
-    th, td{
-      padding:8px;
-      font-size:14px;
+
+    th,
+    td{
+        padding:4px;
+        font-size:14px;
     }
-  }
-  
+
+}
   </style>
 </head>
 
 <body>
-  <div class="topbar">
-    <h3>Name: Kate Joyce P. Superio <br> 
-    Section: BSIT 3A
-    </h3> 
-  </div>
+    <div class="topbar">
+        <h3>Name: Kate Joyce P. Superio <br> 
+            Section: BSIT 3A
+        </h3> 
+    </div>
   
-  <div class="container">
-    <h3>Enter Subjects</h3>
+    <div class="container">
+        <h3>Enter Subjects</h3>
 
-    <div id="subjectsContainer">
-        <div class="subject-input">
-            <input type="text" class="subject" placeholder="Enter Subject">
+        <div id="subjectsContainer">
+            <div class="subject-input">
+                <input type="text" class="subject" placeholder="Enter Subject">
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button onclick="addSubject()">Add Subject</button>
+            <button onclick="saveSubjects()">Save Subjects</button>
         </div>
     </div>
+    
+    <div class="containergrade" id="gradingContainer" style="display:none">
+        <h3>Grading Sheet</h3>
 
-<button onclick="addSubject()">Add Subject</button>
-<button onclick="saveSubjects()">Save Subjects</button>
+        <div class="table-wrapper">
+            <table id="gradingTable">
+                <thead>
+                    <tr id="tableHeader">
+                        <th>Name</th>
+                        <th>Average</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
 
-</div>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+        
+        <div class="button-group">
+            <button onclick="addStudent()">Add Student</button>
+        </div>
+    </div>
+    
+    <script>
+    
+    let subjects=[];
+    
+    /* CAPITALIZE NAME */
+    function capitalizeName(input){
+        let words=input.value.toLowerCase().split(" ");
+        for(let i=0;i<words.length;i++){
+            if(words[i]){
+                words[i]=words[i][0].toUpperCase()+words[i].substring(1);
+            }
+        }
+        
+        input.value=words.join(" ");
+    }
 
-<div class="container" id="gradingContainer" style="display:none">
-
-<h3>Grading Sheet</h3>
-
-<div class="table-wrapper">
-
-<table id="gradingTable">
-
-<thead>
-<tr id="tableHeader">
-<th>Name</th>
-<th>Average</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody id="tableBody"></tbody>
-
-</table>
-
-</div>
-
-<button onclick="addStudent()">Add Student</button>
-
-</div>
-
-<script>
-
-let subjects=[];
-
-/* CAPITALIZE NAME */
-
-function capitalizeName(input){
-
-let words=input.value.toLowerCase().split(" ");
-
-for(let i=0;i<words.length;i++){
-if(words[i]){
-words[i]=words[i][0].toUpperCase()+words[i].substring(1);
-}
-}
-
-input.value=words.join(" ");
-
-}
-
-/* ADD SUBJECT INPUT */
+    /* ADD SUBJECT INPUT */
 
 function addSubject(){
 
@@ -325,8 +364,7 @@ if(subject!=="" && !subjects.includes(subject)){
 subjects.push(subject);
 
 let th=document.createElement("th");
-th.innerHTML = subject + ' <button onclick="deleteSubject(this)">❌</button>';
-
+th.innerHTML = subject + ' <button class="remove-subject" onclick="deleteSubject(this)"><i class="fa-solid fa-xmark"></i></button>';
 /* insert before Average column */
 
 header.insertBefore(th,header.children[header.children.length-2]);
