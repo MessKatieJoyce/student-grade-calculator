@@ -36,8 +36,8 @@
     background:#2a2f36;
     padding:25px;
     margin:30px auto;
-    width:50%;
-    max-width:900px;
+    width:90%;
+    max-width: 500px;
     border-radius:10px;
     box-shadow:0 6px 15px rgba(0,0,0,0.35);
     text-align:center;
@@ -120,13 +120,13 @@ button:active{
 .remove-subject{
     background:none;
     border:none;
-    color:#c0392b;
+    color:#abcbf1;
     cursor:pointer;
-    font-size:14px;
+    font-size:13px;
 }
 
 .remove-subject:hover{
-    color:#e74c3c;
+    color:#00192a;
 }
 
 /* TABLE */
@@ -148,22 +148,34 @@ table{
 th{
     background:#0f1419;
     color:#f0f3f6;
-    padding:10px 5px;
+    padding:12px 10px;
     font-weight:600;
     border-bottom:2px solid #3a4048;
 }
 
+th .subject-header{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+}
+
 /* TABLE CELLS */
 
-th,
-td{
+th,td{
     border:1px solid #ccc;
     text-align:center;
+    vertical-align:middle;
 }
 
 td{
     padding:10px;
     border-bottom:1px solid #3a4048;
+}
+
+th:not(:first-child){
+    min-width:110px;
 }
 
 /* ZEBRA ROWS */
@@ -247,7 +259,7 @@ td button:hover{
 
     .containergrade{
         width:90%;
-        max-width:450px;
+        max-width:400px;
     }
 
     td input[type="text"]{
@@ -360,7 +372,15 @@ if(subject!=="" && !subjects.includes(subject)){
 subjects.push(subject);
 
 let th=document.createElement("th");
-th.innerHTML = subject + ' <button class="remove-subject" onclick="deleteSubject(this)"><i class="fa-solid fa-xmark"></i></button>';
+th.innerHTML = `
+<div class="subject-header">
+    <span>${subject}</span>
+    <button class="remove-subject" onclick="deleteSubject(this)">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>
+`;
+
 /* insert before Average column */
 
 header.insertBefore(th,header.children[header.children.length-2]);
