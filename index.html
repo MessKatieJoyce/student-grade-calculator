@@ -133,6 +133,7 @@ button:active{
 
 .table-wrapper{
     overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
     width:100%;
 }
 
@@ -194,6 +195,11 @@ th:first-child,
 td:first-child{
     background:#1b2026;
     z-index:2;
+}
+
+.row-number{
+    width:40px;
+    font-weight:600;
 }
 
 /* NAME INPUT */
@@ -308,6 +314,7 @@ td button:hover{
             <table id="gradingTable">
                 <thead>
                     <tr id="tableHeader">
+                        <th>#</th>
                         <th>Name</th>
                         <th>Average</th>
                         <th>Action</th>
@@ -340,170 +347,169 @@ td button:hover{
     }
 
     /* ADD SUBJECT INPUT */
+    
+    function addSubject(){
+        let container=document.getElementById("subjectsContainer");
+        let div=document.createElement("div");
+        div.className="subject-input";
+        div.innerHTML='<input type="text" class="subject" placeholder="Enter Subject">';
+        container.appendChild(div);
+    }
 
-function addSubject(){
+    /* SAVE SUBJECTS */
 
-let container=document.getElementById("subjectsContainer");
+    function saveSubjects(){
+        let inputs=document.querySelectorAll(".subject");
+        let header=document.getElementById("tableHeader");
+        let rows=document.querySelectorAll("#tableBody tr");
 
-let div=document.createElement("div");
-div.className="subject-input";
+        inputs.forEach(input=>{
 
-div.innerHTML='<input type="text" class="subject" placeholder="Enter Subject">';
+        let subject=input.value.trim();
+        if(subject!=="" && !subjects.includes(subject)){
+            subjects.push(subject);
+            let th=document.createElement("th");
+            th.innerHTML = `
+            <div class="subject-header">
+                <span>${subject}</span>
+                <button class="remove-subject" onclick="deleteSubject(this)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            `;
+            
+            /* insert before Average column */
+            
+            header.insertBefore(th,header.children[header.children.length-2]);
+            rows.forEach(row=>{
+                let td=document.createElement("td");
+                td.innerHTML='<input type="number" min="0" max="99" oninput="computeAverage(this)">';
+                row.insertBefore(td,row.children[row.children.length-2]);
+            });
+        }
+        });
+    
+        /* show table */
+        document.getElementById("gradingContainer").style.display="block";
 
-container.appendChild(div);
+        /* reset subject input */
+        document.getElementById("subjectsContainer").innerHTML=
+            '<div class="subject-input"><input type="text" class="subject" placeholder="Enter Subject"></div>';
+    }
 
-}
 
-/* SAVE SUBJECTS */
+    /* ADD STUDENT */
+    function addStudent(){
+        let table=document.getElementById("tableBody");
+        let row=document.createElement("tr");
 
-function saveSubjects(){
-
-let inputs=document.querySelectorAll(".subject");
-let header=document.getElementById("tableHeader");
-let rows=document.querySelectorAll("#tableBody tr");
-
-inputs.forEach(input=>{
-
-let subject=input.value.trim();
-
-if(subject!=="" && !subjects.includes(subject)){
-
-subjects.push(subject);
-
-let th=document.createElement("th");
-th.innerHTML = `
-<div class="subject-header">
-    <span>${subject}</span>
-    <button class="remove-subject" onclick="deleteSubject(this)">
-        <i class="fa-solid fa-xmark"></i>
-    </button>
-</div>
-`;
-
-/* insert before Average column */
-
-header.insertBefore(th,header.children[header.children.length-2]);
-
-rows.forEach(row=>{
-
-let td=document.createElement("td");
-td.innerHTML='<input type="number" min="0" max="99" oninput="computeAverage(this)">';
-
-row.insertBefore(td,row.children[row.children.length-2]);
-
-});
-
-}
-
-});
-
-/* show table */
-
-document.getElementById("gradingContainer").style.display="block";
-
-/* reset subject input */
-
-document.getElementById("subjectsContainer").innerHTML=
-'<div class="subject-input"><input type="text" class="subject" placeholder="Enter Subject"></div>';
-
-}
-
-/* ADD STUDENT */
-
-function addStudent(){
-  let table=document.getElementById("tableBody");
-  let row=document.createElement("tr");
+        /* NUMBER COLUMN */
+        let number=document.createElement("td");
+        number.className="row-number";
+        row.appendChild(number);
   
-  /* NAME */
-  let name=document.createElement("td");
-  name.innerHTML='<input type="text" oninput="capitalizeName(this)">';
-  row.appendChild(name);
+        /* NAME */
+        let name=document.createElement("td");
+        name.innerHTML='<input type="text" oninput="capitalizeName(this)">';
+        row.appendChild(name);
 
-  /* SUBJECTS */
-  subjects.forEach(()=>{
-    let td=document.createElement("td");
-    td.innerHTML='<input type="number" oninput="limitGrade(this);computeAverage(this)">';
-    row.appendChild(td);
-  });
+        /* SUBJECTS */
+        subjects.forEach(()=>{
+            let td=document.createElement("td");
+            td.innerHTML='<input type="number" oninput="limitGrade(this);computeAverage(this)">';
+            row.appendChild(td);
+        });
 
-  /* AVERAGE */
-  let avg=document.createElement("td");
-  avg.innerText="0";
+        /* AVERAGE */
+        let avg=document.createElement("td");
+        avg.innerText="0";
+        row.appendChild(avg);
 
-  row.appendChild(avg);
-
-  /* DELETE BUTTON */
-  let del=document.createElement("td");
-  del.innerHTML='<button onclick="deleteStudent(this)">Delete</button>';
-  row.appendChild(del);
+        /* DELETE BUTTON */
+        let del=document.createElement("td");
+        del.innerHTML='<button onclick="deleteStudent(this)">Delete</button>';
+        row.appendChild(del);
   
-  table.appendChild(row);
+        table.appendChild(row);
 
-}
+        updateRowNumbers();
+    }
 
-/* limit grade */
-  function limitGrade(input){
-    if(input.value.length > 2){
-      input.value = input.value.slice(0,2);
+    function updateRowNumbers(){
+        let rows=document.querySelectorAll("#tableBody tr");
+        rows.forEach((row,index)=>{
+            row.querySelector(".row-number").innerText=index+1;
+        });
     }
     
-    if(parseInt(input.value) > 99){
-      input.value = 99;
+    /* limit grade */
+    function limitGrade(input){
+        if(input.value.length > 2){
+            input.value = input.value.slice(0,2);
+        }
+    
+        if(parseInt(input.value) > 99){
+            input.value = 99;
+        }
     }
-  }
   
-/* DELETE STUDENT */
-function deleteStudent(btn){
-  btn.parentElement.parentElement.remove();
-}
+    /* DELETE STUDENT */
+    function deleteStudent(btn){
+        btn.parentElement.parentElement.remove();
+        updateRowNumbers();
+    }
 
   
-/* REMOVE SUBJECT */
+    /* REMOVE SUBJECT */
   
-function deleteSubject(btn){
+    function deleteSubject(btn){
+        
+        let th = btn.parentElement;
+        let index = th.cellIndex;
+        
+        subjects.splice(index-1,1);
+        
+        th.remove();
 
-let th = btn.parentElement;
-let index = th.cellIndex;
+        let rows = document.querySelectorAll("#tableBody tr");
 
-subjects.splice(index-1,1);
+        rows.forEach(row=>{
+        row.deleteCell(index);
+        });
+    }
 
-th.remove();
+    /* COMPUTE AVERAGE */
+    function computeAverage(input){
+        let row=input.parentElement.parentElement;
+        let grades=row.querySelectorAll("input[type='number']");
 
-let rows = document.querySelectorAll("#tableBody tr");
+        let total=0;
+        let count=0;
 
-rows.forEach(row=>{
-row.deleteCell(index);
-});
+        grades.forEach(g=>{
+            if(g.value!==""){
+                total+=parseFloat(g.value);
+                count++;
+            }
+        });
+        
+        let average=count?(total/count).toFixed(2):0;
+        row.children[row.children.length-2].innerText=average;
+    }
 
-}
+    document.querySelectorAll("input").forEach(input => {
+        
+        input.addEventListener("focus", function(){
+            setTimeout(() => {
+                this.scrollIntoView({
+                    behavior:"smooth",
+                    block:"center"
+                });
+            },300);
 
-/* COMPUTE AVERAGE */
+        });
 
-function computeAverage(input){
-
-let row=input.parentElement.parentElement;
-
-let grades=row.querySelectorAll("input[type='number']");
-
-let total=0;
-let count=0;
-
-grades.forEach(g=>{
-
-if(g.value!==""){
-
-total+=parseFloat(g.value);
-count++;
-
-}
-
-});
-
-let average=count?(total/count).toFixed(2):0;
-
-row.children[row.children.length-2].innerText=average;
-
-}
+    });
 
 </script>
 
