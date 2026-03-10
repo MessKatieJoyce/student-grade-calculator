@@ -40,7 +40,7 @@
 
     .container{
         background:rgba(47, 36, 67, 0.85);
-        backdrop-filter:blur(-10px);
+        backdrop-filter:blur(1px);
         padding:25px;
         margin: 50px auto;
         width:90%;
@@ -61,7 +61,7 @@
 
     .containergrade{
         background:rgba(47, 36, 67, 0.85);
-        backdrop-filter:blur(-10px);
+        backdrop-filter:blur(1px);
         padding:25px;
         margin:30px auto;
         width:80%;
@@ -70,37 +70,37 @@
         box-shadow:0 6px 15px rgba(0,0,0,0.35);
     }
 
-/* SUBJECT INPUT */
+    /* SUBJECT INPUT */
 
-.subject-input{
-    margin-bottom:10px;
-    width:100%;
+    .subject-input{
+        margin-bottom:10px;
+        width:100%;
 
-}
+    }
 
-#subjectsContainer{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    width:100%;
-}
+    #subjectsContainer{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        width:100%;
+    }
 
-/* INPUTS */
+    /* INPUTS */
 
-input{
-     padding:10px;
-    width:100%;
-    box-sizing:border-box;
-    border-radius:6px;
-    border:1px solid #533972;
-    background:rgba(44, 33, 64, 0.85);
-    color:#e4e6eb;
-}
+    input{
+        padding:10px;
+        width:100%;
+        box-sizing:border-box;
+        border-radius:6px;
+        border:1px solid #533972;
+        background:rgba(44, 33, 64, 0.85);
+        color:#e4e6eb;
+    }
 
-input:focus{
-    outline:none;
-    border-color:#914ae2;
-}
+    input:focus{
+        outline:none;
+        border-color:#914ae2;
+    }
 
 /* BUTTONS */
 
@@ -118,26 +118,26 @@ button{
 }
 
 button:hover{
-    background:#63048d;
+    background:#650098;
 }
 
 button:active{
     transform:scale(.96);
-}
+} 
 
 /* REMOVE SUBJECT BUTTON */
 
 .remove-subject{
     background:none;
     border:none;
-    color:#abcbf1;
+    color:#042c5e;
     cursor:pointer;
     font-size:13px;
 }
 
 .remove-subject:hover{
-    background-color: #392450;
-    color:#00192a;
+    background-color: #251238;
+    color:#3783b5;
 }
 
 /* TABLE */
@@ -183,7 +183,7 @@ th,td{
 
 td{
     padding:10px;
-    border-bottom:1px solid #3a4048;
+    border-bottom:1px solid #4f6c92;
 }
 
 th:not(:first-child){
@@ -276,7 +276,7 @@ td button:hover{
 
     .containergrade{
         width:90%;
-        max-width:360px;
+        max-width:300px;
     }
 
     td input[type="text"]{
@@ -475,19 +475,36 @@ td button:hover{
     /* REMOVE SUBJECT */
   
     function deleteSubject(btn){
-        
-        let th = btn.parentElement;
+
+        let th = btn.closest("th"); // get the real header cell
         let index = th.cellIndex;
-        
-        subjects.splice(index-1,1);
-        
+
+        subjects.splice(index-2,1);
+
         th.remove();
 
         let rows = document.querySelectorAll("#tableBody tr");
 
         rows.forEach(row=>{
-        row.deleteCell(index);
+            row.deleteCell(index);
+
+            // recompute average after column deletion
+            let grades = row.querySelectorAll("input[type='number']");
+            let total = 0;
+            let count = 0;
+
+            grades.forEach(g=>{
+                if(g.value !== ""){
+                    total += parseFloat(g.value);
+                    count++;
+                }
+            });
+
+            let average = count ? (total/count).toFixed(2) : 0;
+            row.children[row.children.length-2].innerText = average;
+
         });
+
     }
 
     /* COMPUTE AVERAGE */
