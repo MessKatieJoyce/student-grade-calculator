@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<title>Passi City College Grading System</title>
+
+<style>
+html {
+    scroll-behavior: smooth;
+    min-height: 100%;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f1f5f9;
+    margin: 0;
+    min-height: 100vh;
+    color: #1f1024;
+}
+
+i {
+    margin-right: 5px;
+}
+
+.topbar{
+    background:#f1f5f9;
+    border-bottom:3px solid #1e2228;
+    padding: 5px 20px;
+    box-shadow:0 3px 8px rgba(6, 0, 26, 0.777);
+    margin: 0;
+}
+
+.topbar-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topbar h3{
+    margin: 0 0 0 4px;
+    font-weight:500;
+    line-height:1.2;
+    font-size: 13.5px;
+}
+
+.menu-toggle,
+.sidebar-close {
+    width: 34px;
+    height: 34px;
+    border: 1px solid #c4c7cf;
+    border-radius: 6px;
+    background: white;
+    color: #1e2228;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.menu-toggle i,
+.sidebar-close i {
+    margin-right: 0;
+}
+
+.menu-toggle:hover,
+.sidebar-close:hover {
+    background: #f3e2fa;
+    border-color: #75597fcb;
+    color: #311839;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: rgba(17, 24, 39, 0.42);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.degree-sidebar {
+    width: min(330px, calc(100% - 38px));
+    height: 100%;
+    background: #ffffff;
+    box-shadow: 5px 0 20px rgba(0,0,0,0.2);
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-overlay.active .degree-sidebar {
+    transform: translateX(0);
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #d1d5db;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    color: #1f1024;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.sidebar-nav {
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.sidebar-nav a,
+.teacher-menu summary {
+    color: #1f2937;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 550;
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.sidebar-nav a:hover,
+.teacher-menu summary:hover {
+    background: #f3e8ff;
+    color: #311839;
+}
+
+.sidebar-nav i {
+    width: 16px;
+    margin-right: 0;
+    text-align: center;
+}
+
+.teacher-menu {
+    margin: 0;
+}
+
+.teacher-menu summary {
+    list-style: none;
+    justify-content: space-between;
+}
+
+.teacher-menu summary::-webkit-details-marker {
+    display: none;
+}
+
+.teacher-menu summary .summary-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.teacher-menu summary .fa-chevron-down {
+    transition: transform 0.2s ease;
+}
+
+.teacher-menu[open] summary .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.teacher-submenu {
+    margin: 2px 0 6px 24px;
+    border-left: 2px solid #e5e7eb;
+    padding-left: 7px;
+}
+
+.home-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 42px 20px 55px;
+}
+
+.home-hero {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.home-hero h1 {
+    margin: 0 0 10px;
+    font-size: 28px;
+    font-weight: 800;
+    color: #1f1024;
+}
+
+.home-hero h4 {
+    text-align:center;
+    color: #332638f0;
+    font-weight:500;
+    font-size: 18px;
+    margin: 0;
+    font-style:italic;
+}
+
+.home-hero p {
+    text-align:center;
+    max-width:650px;
+    margin: 20px auto 0;
+    color:#4b5563;
+    font-size:13px;
+    line-height:1.7;
+}
+
+.degree-section {
+    margin-top: 20px;
+    padding: 28px;
+    border: 1px solid #a29da3a5;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(184, 179, 228, 0.81);
+}
+
+.degree-section h2 {
+    margin: 0 0 8px;
+    text-align: left;
+    font-size: 20px;
+    color: #332638f0;
+}
+
+.degree-section p {
+    margin: 0 0 20px;
+    color:#4b5563;
+    font-size:12px;
+    line-height:1.6;
+}
+
+.degree-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+}
+
+.degree-card {
+    min-height: 112px;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #75597f70;
+    background: white;
+    color: #1f1024;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.degree-card:hover {
+    border-color: #311839;
+    box-shadow: 0 5px 14px rgba(49, 24, 57, 0.18);
+    transform: translateY(-2px);
+}
+
+.degree-card i {
+    color: #4a2457;
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.degree-card strong {
+    font-size: 14px;
+    line-height: 1.35;
+}
+
+.degree-card span {
+    color: #6b7280;
+    font-size: 11px;
+    margin-top: 10px;
+}
+
+.teacher-card {
+    cursor: default;
+}
+
+.teacher-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.teacher-links a {
+    color: #311839;
+    font-size: 12px;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.teacher-links a:hover {
+    text-decoration: underline;
+}
+
+.footer {
+    margin-top: 50px;
+    padding: 15px;
+    text-align: center;
+    background: #200827;
+    font-size: 12px;
+    border-top: 3px solid #75597fcb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.footer p {
+    margin: 5px 0;
+    color: #b3b9c3;
+    text-align: center;
+}
+
+.footer i {
+    margin-right: 5px;
+    color: #c084fc;
+}
+
+@media (max-width: 768px) {
+    body {
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .topbar {
+        padding: 5px 10px;
+    }
+
+    .topbar h3 {
+        font-size: 10px;
+    }
+
+    .menu-toggle,
+    .sidebar-close {
+        width: 32px;
+        height: 32px;
+    }
+
+    .sidebar-header h3 {
+        font-size: 13px;
+    }
+
+    .sidebar-nav a,
+    .teacher-menu summary {
+        font-size: 12px;
+    }
+
+    .home-wrapper {
+        padding: 30px 12px 40px;
+    }
+
+    .home-hero h1 {
+        font-size: 22px;
+    }
+
+    .home-hero h4 {
+        font-size: small;
+    }
+
+    .home-hero p,
+    .degree-section p {
+        font-size: 10px;
+    }
+
+    .degree-section {
+        padding: 20px;
+    }
+
+    .degree-section h2 {
+        font-size: 17px;
+    }
+
+    .degree-card strong {
+        font-size: 13px;
+    }
+
+    .footer {
+        font-size: 10px;
+        margin-top: auto;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="topbar">
+    <div class="topbar-content">
+        <button type="button" class="menu-toggle" onclick="openDegreeSidebar()" aria-label="Open degree menu" aria-controls="degreeSidebar" aria-expanded="false">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <h3><i class="fa-solid fa-user"></i>  Kate Joyce P. Superio | BSIT 3A</h3>
+    </div>
+</div>
+
+<div id="degreeSidebarOverlay" class="sidebar-overlay" onclick="closeDegreeSidebar(event)">
+    <aside id="degreeSidebar" class="degree-sidebar" aria-label="Bachelor degree grading system links">
+        <div class="sidebar-header">
+            <h3>Degree Grading Systems</h3>
+            <button type="button" class="sidebar-close" onclick="closeDegreeSidebar()" aria-label="Close degree menu">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="homepage.html">
+                <i class="fa-solid fa-home"></i>
+                Home
+            </a>
+            <a href="business-administration.html">
+                <i class="fa-solid fa-briefcase"></i>
+                Bachelor of Science in Business Administration
+            </a>
+            <a href="criminal-justice.html">
+                <i class="fa-solid fa-scale-balanced"></i>
+                Bachelor of Science in Criminal Justice
+            </a>
+            <a href="hospitality-management.html">
+                <i class="fa-solid fa-bell-concierge"></i>
+                Bachelor of Science in Hospitality Management
+            </a>
+            <a href="index.html">
+                <i class="fa-solid fa-laptop-code"></i>
+                Bachelor of Science in Information Technology
+            </a>
+            <details class="teacher-menu">
+                <summary>
+                    <span class="summary-label">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                        Bachelor of Science in Teacher Education
+                    </span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </summary>
+                <div class="teacher-submenu">
+                    <a href="elementary-education.html">
+                        <i class="fa-solid fa-child-reaching"></i>
+                        Bachelor of Science in Elementary Education
+                    </a>
+                    <a href="secondary-education.html">
+                        <i class="fa-solid fa-school"></i>
+                        Bachelor of Science in Secondary Education
+                    </a>
+                </div>
+            </details>
+        </nav>
+    </aside>
+</div>
+
+<main class="home-wrapper">
+    <section class="home-hero">
+        <h1><i class="fa-solid fa-graduation-cap"></i> Passi City College Grading System</h1>
+        <h4><i class="fa-solid fa-chart-line"></i> Track and Calculate Student Grades by Program</h4>
+        <p>
+            Welcome to the student friendly grading system portal. Choose a Bachelor degree below to open its grade sheet, add students, record assessments, and calculate final grades.
+        </p>
+    </section>
+
+    <section class="degree-section">
+        <h2><i class="fa-solid fa-layer-group"></i> Bachelor Degree Grading Systems</h2>
+        <p>Select a program to continue. The list is arranged alphabetically for faster browsing.</p>
+
+        <div class="degree-grid">
+            <a class="degree-card" href="business-administration.html">
+                <span>
+                    <i class="fa-solid fa-briefcase"></i>
+                    <strong>Bachelor of Science in Business Administration</strong>
+                </span>
+                <span>Open grade sheet</span>
+            </a>
+
+            <a class="degree-card" href="criminal-justice.html">
+                <span>
+                    <i class="fa-solid fa-scale-balanced"></i>
+                    <strong>Bachelor of Science in Criminal Justice</strong>
+                </span>
+                <span>Open grade sheet</span>
+            </a>
+
+            <a class="degree-card" href="hospitality-management.html">
+                <span>
+                    <i class="fa-solid fa-bell-concierge"></i>
+                    <strong>Bachelor of Science in Hospitality Management</strong>
+                </span>
+                <span>Open grade sheet</span>
+            </a>
+
+            <a class="degree-card" href="index.html">
+                <span>
+                    <i class="fa-solid fa-laptop-code"></i>
+                    <strong>Bachelor of Science in Information Technology</strong>
+                </span>
+                <span>Open grade sheet</span>
+            </a>
+
+            <div class="degree-card teacher-card">
+                <span>
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    <strong>Bachelor of Science in Teacher Education</strong>
+                </span>
+                <div class="teacher-links">
+                    <a href="elementary-education.html">Bachelor of Science in Elementary Education</a>
+                    <a href="secondary-education.html">Bachelor of Science in Secondary Education</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <p>
+        <i class="fa-solid fa-calculator"></i>
+        Passi City College Student Friendly Grading System
+    </p>
+
+    <p>
+        <i class="fa-solid fa-code"></i>
+        Built with HTML, CSS & JavaScript &copy; 2026
+    </p>
+
+    <p>
+        <i class="fa-solid fa-graduation-cap"></i>
+        Bachelor of Science in Information Technology - 3A
+    </p>
+</footer>
+
+<script>
+function openDegreeSidebar() {
+    document.getElementById("degreeSidebarOverlay").classList.add("active");
+    document.querySelector(".menu-toggle").setAttribute("aria-expanded", "true");
+}
+
+function closeDegreeSidebar(event) {
+    if (event && event.target !== document.getElementById("degreeSidebarOverlay")) return;
+    document.getElementById("degreeSidebarOverlay").classList.remove("active");
+    document.querySelector(".menu-toggle").setAttribute("aria-expanded", "false");
+}
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+        document.getElementById("degreeSidebarOverlay").classList.remove("active");
+        document.querySelector(".menu-toggle").setAttribute("aria-expanded", "false");
+    }
+});
+</script>
+</body>
+</html>

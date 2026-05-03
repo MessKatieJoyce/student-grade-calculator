@@ -1,546 +1,1505 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Simple Grading System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <style>
-    
-    body{
-        font-family:"Segoe UI", Arial, sans-serif;
-        background:#1e2228;
-        margin:0;
-        color:#e4e6eb;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<title>Final Grading System (Simple Grade Calculator)</title>
 
-        background-image:url("tulip.jpg");
-        background-size:cover;
-        background-position:center;
-        background-attachment:fixed;
-    }
+<style>
 
-    /* TOP BAR */
+html {
+    scroll-behavior: smooth;
+    min-height: 100%;
+}
 
-    .topbar{
-        background:#1f1024;
-        border-bottom:3px solid #5f21bc;
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f1f5f9; 
+    margin: 0;
+    min-height: 100vh;
+}
+
+i {
+    margin-right: 5px;
+}
+
+/* TOP BAR */
+
+.topbar{
+        background:#f1f5f9;
+        border-bottom:3px solid #1e2228;
         padding: 5px 20px;
         box-shadow:0 3px 8px rgba(6, 0, 26, 0.777);
+        margin: 0;
+}
+
+.topbar-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topbar h3{
+    margin: 0 0 0 4px;
+    font-weight:500;
+    line-height:1.2;
+    font-size: 13.5px;
+}
+
+.menu-toggle,
+.sidebar-close {
+    width: 34px;
+    height: 34px;
+    border: 1px solid #c4c7cf;
+    border-radius: 6px;
+    background: white;
+    color: #1e2228;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.menu-toggle i,
+.sidebar-close i {
+    margin-right: 0;
+}
+
+.menu-toggle:hover,
+.sidebar-close:hover {
+    background: #f3e2fa;
+    border-color: #75597fcb;
+    color: #311839;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: rgba(17, 24, 39, 0.42);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.degree-sidebar {
+    width: min(330px, calc(100% - 38px));
+    height: 100%;
+    background: #ffffff;
+    box-shadow: 5px 0 20px rgba(0,0,0,0.2);
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-overlay.active .degree-sidebar {
+    transform: translateX(0);
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #d1d5db;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    color: #1f1024;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.sidebar-nav {
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.sidebar-nav a,
+.teacher-menu summary {
+    color: #1f2937;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 550;
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.sidebar-nav a:hover,
+.teacher-menu summary:hover {
+    background: #f3e8ff;
+    color: #311839;
+}
+
+.sidebar-nav a.active-degree {
+    background: #311839;
+    color: white;
+}
+
+.sidebar-nav i {
+    width: 16px;
+    margin-right: 0;
+    text-align: center;
+}
+
+.teacher-menu {
+    margin: 0;
+}
+
+.teacher-menu summary {
+    list-style: none;
+    justify-content: space-between;
+}
+
+.teacher-menu summary::-webkit-details-marker {
+    display: none;
+}
+
+.teacher-menu summary .summary-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.teacher-menu summary .fa-chevron-down {
+    transition: transform 0.2s ease;
+}
+
+.teacher-menu[open] summary .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.teacher-submenu {
+    margin: 2px 0 6px 24px;
+    border-left: 2px solid #e5e7eb;
+    padding-left: 7px;
+}
+
+h2 {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 5px;
+    font-weight: 800;
+    color: #1f1024;
+}
+
+h4 {
+    text-align:center; 
+    color: #332638f0; 
+    font-weight:500; 
+    margin: 0 0 0 15px; 
+    font-style:italic;
+}
+
+p {
+    text-align:center; max-width:550px; margin: 20px auto 25px auto; color:#4b5563; font-size:12px; line-height:1.6;
+}
+
+
+.control-container {
+    margin: 10px auto;
+    padding: 10px 15px;
+    max-width: 1100px;
+}
+.control-container h3{
+    text-align:center; 
+    color: #332638f0; 
+    font-weight: 650; 
+}
+
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 12px;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.controls input:focus {
+    box-shadow: 0 4px 15px rgba(184, 179, 228, 0.81);
+    background: rgba(255,255,255,0.1);
+}
+
+input[type="text"] {
+    padding: 8px;
+    width: 250px;
+    border-radius: 6px;
+    border: 1px solid #75597fcb;
+    outline: none;
+
+}
+
+input[type="text"]:hover {
+    border: 1px solid #2d0f56cb;
+    outline: none;
+}
+
+.btn {
+    padding: 10px 12px;
+    background: #311839;
+    color: white;
+    border: 1px solid #a5bfd0;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btn:hover {
+    background: #f3e2fa;
+    color: #311839;
+    border: 1px solid #75597fcb;
+}
+
+.header-delete-btn {
+    font-size: 11px;
+    line-height: 1;
+    color: #7f1d1d;
+    background: white;
+    border: none;
+    box-shadow: none;
+}
+
+.header-delete-btn i {
+    align-items: center;
+    margin-right: 0;
+}
+
+.header-delete-btn:hover {
+    color: #220101;
+    border: none;
+}
+
+.container {
+    margin: 10px auto 50px auto;
+    padding: 20px;
+    max-width: 1100px;
+    box-shadow: 0 4px 15px rgba(184, 179, 228, 0.81);
+    padding: 30px;
+    border-radius: 10px;
+    border: 1px solid #a29da3a5;
+}
+
+.container h3{
+    text-align: left; 
+    color: #332638f0; 
+    font-weight: 650; 
+    margin: 0;
+}
+
+.table-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+ .clear-table-btn {
+    background: #fff1f1;
+    color: #7f1d1d;
+    border: 1px solid #7f1d1d;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 11px;
+    font-weight: 550;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.clear-table-btn i {
+    margin-right: 5px;
+}
+
+.clear-table-btn:hover {
+    background: #7f1d1d;
+    color: white;
+}
+
+.container p {
+    text-align: left;
+    margin-left: 0;
+}
+
+
+
+.table-container {
+    overflow-x: auto;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    min-width: 800px; /* ensures proper spacing */
+    
+}
+
+th, td {
+    border: 1px solid #75597fcb;
+    padding: 8px;
+    font-size: 12px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: white;
+    color: rgb(28, 1, 28);
+}
+
+th.group {
+    background: #311839;
+    color: white;
+}
+
+.avg {
+    background: #dbeafe;
+    color: #200827;
+    font-weight: bold;
+}
+
+.total {
+    background: #fef3c7;
+    color: #200827;
+    font-weight: bold;
+}
+
+.grade-result-header {
+    background: #4a2457;
+    color: white;
+    font-weight: bold;
+}
+
+.grade-result {
+    background: #f3e8ff;
+    color: #200827;
+    font-weight: bold;
+}
+
+tr:hover {
+    background: #eaf3ff;
+}
+
+input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    text-align: center;
+    background: #eaf3ff;
+    backdrop-filter:blur(10px);
+    border: 1px solid #ccdbee ;
+    outline: none;
+}
+
+
+.passed {
+    color: #16a34a;
+    font-weight: bold;
+}
+
+.failed {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+
+.delete-act {
+    background: #7f1d1d;
+    color: white;
+    padding: 5px 7px;
+    border-radius: 5px;
+    border: none;
+    font-size: 11px;
+    margin: auto;
+}
+
+.delete-act i {
+    align-items: center;
+    margin-right: 0;
+}
+
+.delete-act:hover {
+    background: #b91c1c;
+}
+
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 22px 20px;
+    border-radius: 10px;
+    width: min(300px, calc(100% - 40px));
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.modal-content h3 {
+    margin: 0 0 10px;
+}
+
+.modal-content p {
+    margin: 8px auto 16px;
+}
+
+.modal-content input[type="number"] {
+    width: 150px;
+    box-sizing: border-box;
+    padding: 9px 10px;
+    text-align: center;
+    background: #eaf3ff;
+    backdrop-filter:blur(10px);
+    border: 1px solid #75597fcb;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+.modal-content input:focus {
+    outline: none;
+    box-shadow: 0 0 6px #0c2761;
+    background: rgba(255,255,255,0.1);
+}
+
+.modal-content button {
+    margin: 2px 3px;
+}
+
+.footer {
+    margin-top: 50px;
+    padding: 15px;
+    text-align: center;
+    background: #200827;
+    font-size: 12px;
+    border-top: 3px solid #75597fcb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.footer p {
+    margin: 5px 0;
+    color: #b3b9c3;
+    text-align: center;
+}
+
+.footer i {
+    margin-right: 5px;
+    color: #c084fc;
+}
+
+
+@media (max-width: 1200px) {
+    body {
+        min-height: 100vh;
+        min-height: 120svh;
+        
+    }
+
+    .footer {
+        font-size: 11px;
+        margin-top: auto;
+    }
+}
+
+
+
+@media (max-width: 768px) {
+    body {
+        min-height: 90vh;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
     }
 
     .topbar h3{
-        margin-left: 20px;
-        font-weight:500;
-        letter-spacing:.5px;
-        line-height:1.2;
+        font-size: 10px;
+    }
+
+    .topbar {
+        padding: 5px 10px;
+    }
+
+    .menu-toggle,
+    .sidebar-close {
+        width: 32px;
+        height: 32px;
+    }
+
+    .sidebar-header h3 {
+        font-size: 13px;
+    }
+
+    .sidebar-nav a,
+    .teacher-menu summary {
+        font-size: 12px;
+    }
+
+    h2 {
+        font-size: large;
+    }
+
+    h4 {
         font-size: small;
     }
-
-    /* CONTAINERS */
-
-    .container{
-        background:rgba(47, 36, 67, 0.85);
-        backdrop-filter:blur(1px);
-        padding:25px;
-        margin: 50px auto;
-        width:90%;
-        max-width: 500px;
-        border-radius:10px;
-        box-shadow:0 6px 15px rgba(0,0,0,0.35);
-        text-align:center;
+    
+    p {
+        font-size: 10px;
+        margin: 10px;
     }
 
-
-
-    .container h3{
-        margin-top:0;
-        font-weight:600;
-        border-bottom:2px solid #3a4048;
-        padding-bottom:10px;
+    .control-container h3 {
+        font-size: medium;
     }
 
-    .containergrade{
-        background:rgba(47, 36, 67, 0.85);
-        backdrop-filter:blur(1px);
-        padding:25px;
-        margin:30px auto;
-        width:80%;
-        max-width:900px;
-        border-radius:10px;
-        box-shadow:0 6px 15px rgba(0,0,0,0.35);
+    .control-container p {
+        font-size: 10px;
+        margin: 10px 30px 20px 30px;
     }
 
-    /* SUBJECT INPUT */
-
-    .subject-input{
-        margin-bottom:10px;
-        width:100%;
-
+    /* Stack everything nicely */
+    .controls-row {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    #subjectsContainer{
-        display:flex;
-        flex-direction:column;
-        align-items:center;
-        width:100%;
+    .controls {
+        justify-content: center;
+        width: 100%;
     }
 
-    /* INPUTS */
-
-    input{
-        padding:10px;
-        width:100%;
-        box-sizing:border-box;
-        border-radius:6px;
-        border:1px solid #6a4795;
-        background:rgba(36, 27, 52, 0.85);
-        color:#e4e6eb;
+    button {
+        font-size: 10px;
     }
 
-    input:focus{
-        outline:none;
-        border-color:#a070ff;
+    .delete-act i {
+    font-size: 10px;
+    border: none;
+    }
+    
+
+    
+    .control-container h3 {
+        margin-bottom: 10px;
     }
 
-/* BUTTONS */
-
-button{
-    padding:9px 16px;
-    margin-top:12px;
-    margin-right:8px;
-    border:none;
-    border-radius:6px;
-    background:#1a0822;
-    color:white;
-    font-weight:500;
-    cursor:pointer;
-    transition:0.2s;
-}
-
-button:hover{
-    background:#650098;
-}
-
-button:active{
-    transform:scale(.96);
-} 
-
-/* REMOVE SUBJECT BUTTON */
-
-.remove-subject{
-    background:none;
-    border:none;
-    color:#042c5e;
-    cursor:pointer;
-    font-size:13px;
-}
-
-.remove-subject:hover{
-    background-color: #251238;
-    color:#3783b5;
-}
-
-/* TABLE */
-
-.table-wrapper{
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-    width:100%;
-}
-
-table{
-    width:max-content;
-    min-width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
-}
-
-/* TABLE HEADER */
-
-th{
-    background:#1b0f28;
-    color:#f0f3f6;
-    padding:12px 10px;
-    font-weight:600;
-    border-bottom:2px solid #3a4048;
-}
-
-th .subject-header{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-}
-
-/* TABLE CELLS */
-
-th,td{
-    border:1px solid #ccc;
-    text-align:center;
-    vertical-align:middle;
-}
-
-td{
-    padding:10px;
-    border-bottom:1px solid #4f6c92;
-}
-
-th:not(:first-child){
-    min-width:110px;
-}
-
-/* ZEBRA ROWS */
-
-tbody tr:nth-child(even){
-    background:#2b2431;
-}
-
-tbody tr:hover{
-    background:#130018;
-}
-
-/* STICKY NAME COLUMN */
-
-th:first-child,
-td:first-child{
-    background:#391842;
-    z-index:2;
-}
-
-.row-number{
-    width:40px;
-    font-weight:600;
-}
-
-/* NAME INPUT */
-
-td:first-child input{
-    width:90%;
-}
-
-/* GRADE INPUT */
-
-td input[type="number"]{
-    width:65px;
-    text-align:center;
-    display:block;
-    margin:auto;
-}
-
-/* DELETE BUTTON IN TABLE */
-
-td button{
-    background:#8f0000;
-}
-
-td button:hover{
-    background:#c14545;
-}
-
-/* MOBILE RESPONSIVE */
-
-@media screen and (max-width:768px){
-
-    .topbar{
-        font-size:13px;
-        padding: 8px;
+    input[type="text"] {
+        font-size: 11px;
+        max-width: 180px;
+        width: 100%;
     }
 
-    .container{
-        width:50%;
-        padding:20px;
-        margin:40px auto;
-    }
-
-    button{
-        width:100%;
-        padding:9px 19px;
-        margin-top: 7px;
-        margin-right:2px;
+    input[type="text"]:hover {
         font-size: 11px;
     }
 
-    .button-group{
-        flex-direction:column;
-        display:flex;
-        justify-content:center;
-        flex-wrap:wrap;
-    }
-
-
-    .subject-input input{
-        width:100%;
-        font-size: 11.5px;
-    }
-
-    .containergrade{
-        width:90%;
-        max-width:330px;
-    }
-
-    td input[type="text"]{
-        width:90%;
+    input:focus {
         font-size: 11px;
     }
 
-    td input[type="number"]{
-        width:50px;
+    input[type="number"] {
+        width: 30px;
+        font-size: 10px;
     }
 
-    th,
-    td{
-        padding:4px;
-        font-size:11px;
+    .container {
+        margin: 10px 5px 40px 5px;
+        padding: 20px;
+    
     }
 
+    .container h3 {
+        font-size: medium;
+    }
+
+    .table-heading {
+        align-items: flex-start;
+    }
+
+    .clear-table-btn {
+        padding: 6px 7px;
+        font-size: 10px;
+    
+    }
+
+    .container p {
+        font-size: 10px;
+    }
+
+   /* Table scroll stays smooth */
+    .table-container {
+        overflow-x: auto;
+        
+    }
+
+    table {
+        min-width: 750px; /* slightly smaller */
+    }
+
+    th, td {
+        font-size: 10px;
+        padding: 6px;
+    }
+
+    .footer {
+        font-size: 10px;
+        margin-top: auto;
+    }
 }
-  </style>
+  
+</style>
 </head>
 
 <body>
-    <div class="topbar">
-        <h3> Kate Joyce P. Superio | BSIT 3A
-        </h3> 
+<div class="topbar">
+    <div class="topbar-content">
+    <button type="button" class="menu-toggle" onclick="openDegreeSidebar()" aria-label="Open degree menu" aria-controls="degreeSidebar" aria-expanded="false">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    <h3><i class="fa-solid fa-user"></i>  Kate Joyce P. Superio | BSIT 3A
+    </h3> 
+    </div>
+</div>
+
+<div id="degreeSidebarOverlay" class="sidebar-overlay" onclick="closeDegreeSidebar(event)">
+    <aside id="degreeSidebar" class="degree-sidebar" aria-label="Bachelor degree grading system links">
+        <div class="sidebar-header">
+            <h3>Degree Grading Systems</h3>
+            <button type="button" class="sidebar-close" onclick="closeDegreeSidebar()" aria-label="Close degree menu">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="homepage.html">
+                <i class="fa-solid fa-home"></i>
+                Home
+            </a>
+            <a href="business-administration.html">
+                <i class="fa-solid fa-briefcase"></i>
+                Bachelor of Science in Business Administration
+            </a>
+            <a href="criminal-justice.html">
+                <i class="fa-solid fa-scale-balanced"></i>
+                Bachelor of Science in Criminal Justice
+            </a>
+            <a href="hospitality-management.html">
+                <i class="fa-solid fa-bell-concierge"></i>
+                Bachelor of Science in Hospitality Management
+            </a>
+            <a href="index.html" class="active-degree">
+                <i class="fa-solid fa-laptop-code"></i>
+                Bachelor of Science in Information Technology
+            </a>
+            <details class="teacher-menu">
+                <summary>
+                    <span class="summary-label">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                        Bachelor of Science in Teacher Education
+                    </span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </summary>
+                <div class="teacher-submenu">
+                    <a href="elementary-education.html">
+                        <i class="fa-solid fa-child-reaching"></i>
+                        Bachelor of Science in Elementary Education
+                    </a>
+                    <a href="secondary-education.html">
+                        <i class="fa-solid fa-school"></i>
+                        Bachelor of Science in Secondary Education
+                    </a>
+                </div>
+            </details>
+        </nav>
+    </aside>
+</div>
+
+<h2><i class="fa-solid fa-graduation-cap"></i> BS Information Technology Grading System</h2>
+<h4>
+    <i class="fa-solid fa-chart-line"></i> Track and Calculate Your Grades!
+</h4>
+
+
+<div class="control-container">
+<h3>
+    <i class="fa-solid fa-pen-to-square"></i> Create Grade Sheet
+</h3>
+
+<p>
+    Please add student name first as much as desired before adding assessments below (eg. quiz, laboratory, assignment, attendance, and major exam total item points).
+</p>
+
+<div class="controls-row">
+<div class="controls">
+    <input type="text" id="studentName" placeholder="Enter Student Name">
+    <button class="btn" onclick="addStudent()"><i class="fa-solid fa-user-plus"></i> Add Student</button>
+</div>
+
+
+<div class="controls"> 
+    
+    <button class="btn" onclick="addAssessment('quiz')"><i class="fa-solid fa-question"></i> Add Quiz</button>
+    <button class="btn" onclick="addAssessment('lab')"><i class="fa-solid fa-flask"></i> Add Lab</button>
+    <button class="btn" onclick="addAssessment('assign')"><i class="fa-solid fa-book"></i> Add Assignment</button>
+    <button class="btn" onclick="addAssessment('att')"><i class="fa-solid fa-calendar-check"></i> Add Attendance</button>
+    <button class="btn" onclick="addAssessment('exam')"><i class="fa-solid fa-file-lines"></i> Add Major Exam</button>   
+</div>
+</div>
+
+</div>
+
+
+
+
+<div class="container">
+
+    <div class="table-heading">
+    <h3>
+    Grade Sheet Table
+    </h3>
+    <button type="button" class="clear-table-btn" onclick="clearTableData()">
+        <i class="fa-solid fa-trash-can"></i> Clear All Data
+    </button>
     </div>
   
-    <div class="container">
-        <h3>Enter Subjects</h3>
+    <p>
+        Enter the student's scores on the input field to accumulate the total final grade automatically.
+    </p>
 
-        <div id="subjectsContainer">
-            <div class="subject-input">
-                <input type="text" class="subject" placeholder="Enter Subject">
-            </div>
-        </div>
-        
-        <div class="button-group">
-            <button onclick="addSubject()">Add Subject</button>
-            <button onclick="saveSubjects()">Save Subjects</button>
-        </div>
-    </div>
-    
-    <div class="containergrade" id="gradingContainer" style="display:none">
-        <h3>Grading Sheet</h3>
+<div class="table-container">
 
-        <div class="table-wrapper">
-            <table id="gradingTable">
-                <thead>
-                    <tr id="tableHeader">
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Average</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
+<table id="table">
+<thead>
+<tr>
+    <th rowspan="2">No.</th>
+    <th rowspan="2">Name</th>
+    <th class="group" colspan="2">Quiz (20%)</th>
+    <th class="group" colspan="2">Laboratory (30%)</th>
+    <th class="group" colspan="2">Assignment (10%)</th>
+    <th class="group" colspan="2">Attendance (10%)</th>
+    <th class="group" colspan="2">Major Exam (30%)</th>
+    <th rowspan="2" class="grade-result-header">Final Grade</th>
+    <th rowspan="2" class="grade-result-header">Equivalent</th>
+    <th rowspan="2">Remarks</th>
+    <th rowspan="2">Action</th>
+</tr>
 
-                <tbody id="tableBody"></tbody>
-            </table>
-        </div>
-        
-        <div class="button-group">
-            <button onclick="addStudent()">Add Student</button>
-        </div>
-    </div>
+
+
+<tr id="subHeader">
     
-    <script>
-    
-    let subjects=[];
-    
-    /* CAPITALIZE NAME */
-    function capitalizeName(input){
-        let words=input.value.toLowerCase().split(" ");
-        for(let i=0;i<words.length;i++){
-            if(words[i]){
-                words[i]=words[i][0].toUpperCase()+words[i].substring(1);
-            }
+    <th class="total">Total (0)</th>
+    <th class="avg">Average (20%)</th>
+    <th class="total">Total (0)</th>
+    <th class="avg">Average (30%)</th>
+    <th class="total">Total (0)</th>
+    <th class="avg">Average (10%)</th>
+    <th class="total">Total (0)</th>
+    <th class="avg">Average (10%)</th>
+    <th class="total">Total (0)</th>
+    <th class="avg">Average (30%)</th>
+</tr>
+</thead>
+
+<tbody id="body"></tbody>
+</table>
+
+</div>
+</div>
+
+<footer class="footer">
+    <p>
+        <i class="fa-solid fa-calculator"></i>
+        Passi City College Student Friendly Grading System 
+    </p>
+
+    <p>
+        <i class="fa-solid fa-code"></i> 
+        Built with HTML, CSS & JavaScript • © 2026
+    </p>
+
+    <p>
+        <i class="fa-solid fa-graduation-cap"></i>
+        Bachelor of Science in Information Technology - 3A
+    </p>
+
+</footer>
+
+
+<script>
+function openDegreeSidebar() {
+    document.getElementById("degreeSidebarOverlay").classList.add("active");
+    document.querySelector(".menu-toggle").setAttribute("aria-expanded", "true");
+}
+
+function closeDegreeSidebar(event) {
+    if (event && event.target !== document.getElementById("degreeSidebarOverlay")) return;
+    document.getElementById("degreeSidebarOverlay").classList.remove("active");
+    document.querySelector(".menu-toggle").setAttribute("aria-expanded", "false");
+}
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+        document.getElementById("degreeSidebarOverlay").classList.remove("active");
+        document.querySelector(".menu-toggle").setAttribute("aria-expanded", "false");
+    }
+});
+
+let config = {
+    quiz: [],
+    lab: [],
+    assign: [],
+    att: [],
+    exam: [] // ✅ ADD THIS
+};
+
+const STORAGE_KEY = "kateGradingSystemState";
+const groupOrder = ["quiz", "lab", "assign", "att", "exam"];
+let isLoadingSavedState = false;
+
+function getExamAddButton() {
+    return document.querySelector("button[onclick=\"addAssessment('exam')\"]");
+}
+
+function addAssessment(type) {
+    if (type === "exam" && config.exam.length >= 1) {
+        document.getElementById("replaceExamMessage").textContent =
+            "Major Exam already exists. Do you want to replace it?";
+        document.getElementById("replaceExamModal").style.display = "flex";
+        return;
+    }
+
+    currentType = type;
+
+    document.getElementById("modalTitle").innerText = "Add " + type.toUpperCase();
+    document.getElementById("modalText").innerText =
+        "Enter the total points for today's " + type;
+
+    document.getElementById("modal").style.display = "flex";
+}
+
+
+let currentType = null;
+
+
+
+
+// --Update all student rows when a new assessment is added ---
+function updateRows(type) {
+    const rows = document.querySelectorAll("#body tr");
+    const groupOrder = ["quiz", "lab", "assign", "att", "exam"];
+    let groupIndex = groupOrder.indexOf(type);
+
+    rows.forEach(row => {
+        // Calculate where to insert new input
+        let insertIndex = 2; // start after No. and Name
+        for (let i = 0; i < groupIndex; i++) {
+            insertIndex += config[groupOrder[i]].length + 2; // previous group + Total + Avg%
         }
-        
-        input.value=words.join(" ");
-    }
+        insertIndex += config[type].length - 1; // insert before Total of this group
 
-    /* ADD SUBJECT INPUT */
-    
-    function addSubject(){
-        let container=document.getElementById("subjectsContainer");
-        let div=document.createElement("div");
-        div.className="subject-input";
-        div.innerHTML='<input type="text" class="subject" placeholder="Enter Subject">';
-        container.appendChild(div);
-    }
+        let td = document.createElement("td");
+        td.innerHTML = `<input type="number" oninput="compute(this)">`;
 
-    /* SAVE SUBJECTS */
-
-    function saveSubjects(){
-        let inputs=document.querySelectorAll(".subject");
-        let header=document.getElementById("tableHeader");
-        let rows=document.querySelectorAll("#tableBody tr");
-
-        inputs.forEach(input=>{
-
-        let subject=input.value.trim();
-        if(subject!=="" && !subjects.includes(subject)){
-            subjects.push(subject);
-            let th=document.createElement("th");
-            th.innerHTML = `
-            <div class="subject-header">
-                <span>${subject}</span>
-                <button class="remove-subject" onclick="deleteSubject(this)">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            `;
-            
-            /* insert before Average column */
-            
-            header.insertBefore(th,header.children[header.children.length-2]);
-            rows.forEach(row=>{
-                let td=document.createElement("td");
-                td.innerHTML='<input type="number" min="0" max="99" oninput="computeAverage(this)">';
-                row.insertBefore(td,row.children[row.children.length-2]);
-            });
-        }
-        });
-    
-        /* show table */
-        document.getElementById("gradingContainer").style.display="block";
-
-        /* reset subject input */
-        document.getElementById("subjectsContainer").innerHTML=
-            '<div class="subject-input"><input type="text" class="subject" placeholder="Enter Subject"></div>';
-    }
-
-
-    /* ADD STUDENT */
-    function addStudent(){
-        let table=document.getElementById("tableBody");
-        let row=document.createElement("tr");
-
-        /* NUMBER COLUMN */
-        let number=document.createElement("td");
-        number.className="row-number";
-        row.appendChild(number);
-  
-        /* NAME */
-        let name=document.createElement("td");
-        name.innerHTML='<input type="text" oninput="capitalizeName(this)">';
-        row.appendChild(name);
-
-        /* SUBJECTS */
-        subjects.forEach(()=>{
-            let td=document.createElement("td");
-            td.innerHTML='<input type="number" oninput="limitGrade(this);computeAverage(this)">';
-            row.appendChild(td);
-        });
-
-        /* AVERAGE */
-        let avg=document.createElement("td");
-        avg.innerText="0";
-        row.appendChild(avg);
-
-        /* DELETE BUTTON */
-        let del=document.createElement("td");
-        del.innerHTML='<button onclick="deleteStudent(this)">Delete</button>';
-        row.appendChild(del);
-  
-        table.appendChild(row);
-
-        updateRowNumbers();
-    }
-
-    function updateRowNumbers(){
-        let rows=document.querySelectorAll("#tableBody tr");
-        rows.forEach((row,index)=>{
-            row.querySelector(".row-number").innerText=index+1;
-        });
-    }
-    
-    /* limit grade */
-    function limitGrade(input){
-        if(input.value.length > 2){
-            input.value = input.value.slice(0,2);
-        }
-    
-        if(parseInt(input.value) > 99){
-            input.value = 99;
-        }
-    }
-  
-    /* DELETE STUDENT */
-    function deleteStudent(btn){
-        btn.parentElement.parentElement.remove();
-        updateRowNumbers();
-    }
-
-  
-    /* REMOVE SUBJECT */
-  
-    function deleteSubject(btn){
-
-        let th = btn.closest("th"); // get the real header cell
-        let index = th.cellIndex;
-
-        subjects.splice(index-2,1);
-
-        th.remove();
-
-        let rows = document.querySelectorAll("#tableBody tr");
-
-        rows.forEach(row=>{
-            row.deleteCell(index);
-
-            // recompute average after column deletion
-            let grades = row.querySelectorAll("input[type='number']");
-            let total = 0;
-            let count = 0;
-
-            grades.forEach(g=>{
-                if(g.value !== ""){
-                    total += parseFloat(g.value);
-                    count++;
-                }
-            });
-
-            let average = count ? (total/count).toFixed(2) : 0;
-            row.children[row.children.length-2].innerText = average;
-
-        });
-
-    }
-
-    /* COMPUTE AVERAGE */
-    function computeAverage(input){
-        let row=input.parentElement.parentElement;
-        let grades=row.querySelectorAll("input[type='number']");
-
-        let total=0;
-        let count=0;
-
-        grades.forEach(g=>{
-            if(g.value!==""){
-                total+=parseFloat(g.value);
-                count++;
-            }
-        });
-        
-        let average=count?(total/count).toFixed(2):0;
-        row.children[row.children.length-2].innerText=average;
-    }
-
-    document.querySelectorAll("input").forEach(input => {
-        
-        input.addEventListener("focus", function(){
-            setTimeout(() => {
-                this.scrollIntoView({
-                    behavior:"smooth",
-                    block:"center"
-                });
-            },300);
-
-        });
-
+        row.insertBefore(td, row.children[insertIndex]);
     });
+}
+
+
+
+// --- Update colspans of main group headers ---
+function updateColspan() {
+    const groups = document.querySelectorAll(".group");
+    groups[0].colSpan = config.quiz.length + 2;
+    groups[1].colSpan = config.lab.length + 2;
+    groups[2].colSpan = config.assign.length + 2;
+    groups[3].colSpan = config.att.length + 2;
+    groups[4].colSpan = config.exam.length + 2;
+}
+
+function formatPoints(points) {
+    return Number.isInteger(points) ? points : points.toFixed(2);
+}
+
+function updateTotalHeaders() {
+    const subHeader = document.getElementById("subHeader");
+    const groupOrder = ["quiz", "lab", "assign", "att", "exam"];
+    let subHeaderIndex = 0;
+
+    groupOrder.forEach(type => {
+        const totalPoints = config[type].reduce((sum, points) => sum + points, 0);
+        const totalHeaderIndex = subHeaderIndex + config[type].length;
+        subHeader.children[totalHeaderIndex].textContent = `Total (${formatPoints(totalPoints)})`;
+        subHeaderIndex += config[type].length + 2;
+    });
+}
+
+function createAssessmentHeader(type, total, number) {
+    let th = document.createElement("th");
+
+    if (type === "exam") {
+        th.innerHTML = `
+            Major Exam (${total})  
+            <button type="button" class="header-delete-btn" onclick="removeExamColumns()" aria-label="Delete Major Exam">      
+            <i class="fa-solid fa-trash"></i>
+            </button>
+            
+        `;
+    } else {
+        th.innerText = `${type.toUpperCase()} ${number} (${total})`;
+    }
+
+    return th;
+}
+
+function rebuildAssessmentHeaders() {
+    const subHeader = document.getElementById("subHeader");
+
+    Array.from(subHeader.children).forEach(th => {
+        if (!th.classList.contains("total") && !th.classList.contains("avg")) {
+            th.remove();
+        }
+    });
+
+    let subHeaderIndex = 0;
+
+    groupOrder.forEach(type => {
+        config[type].forEach((total, index) => {
+            const th = createAssessmentHeader(type, total, index + 1);
+            subHeader.insertBefore(th, subHeader.children[subHeaderIndex + index]);
+        });
+
+        subHeaderIndex += config[type].length + 2;
+    });
+}
+
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+    document.getElementById("modalInput").value = "";
+}
+
+
+
+function sortTable() {
+    let tbody = document.getElementById("body");
+    let rows = Array.from(tbody.querySelectorAll("tr"));
+
+    rows.sort((a, b) => {
+        let nameA = a.children[1].innerText.toLowerCase();
+        let nameB = b.children[1].innerText.toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
+
+    tbody.innerHTML = "";
+    rows.forEach(row => tbody.appendChild(row));
+
+    updateRowNumbers(); // ✅ ALWAYS KEEP NUMBERS CORRECT
+}
+
+function updateRowNumbers() {
+    let rows = document.querySelectorAll("#body tr");
+    rows.forEach((row, index) => {
+        row.querySelector(".row-number").textContent = index + 1;
+    });
+}
+
+function getScoresFromRow(row) {
+    return Array.from(row.querySelectorAll("input")).map(input => input.value);
+}
+
+function createStudentRow(name, scores = []) {
+    let row = document.createElement("tr");
+
+    row.innerHTML = `<td class="row-number"></td><td>${name}</td>`;
+
+    createInputs(row, config.quiz.length);
+    row.innerHTML += `<td class="total">0</td>`;
+    row.innerHTML += `<td class="avg">0</td>`;
+
+    createInputs(row, config.lab.length);
+    row.innerHTML += `<td class="total">0</td>`;
+    row.innerHTML += `<td class="avg">0</td>`;
+
+    createInputs(row, config.assign.length);
+    row.innerHTML += `<td class="total">0</td>`;
+    row.innerHTML += `<td class="avg">0</td>`;
+
+    createInputs(row, config.att.length);
+    row.innerHTML += `<td class="total">0</td>`;
+    row.innerHTML += `<td class="avg">0</td>`;
+
+    createInputs(row, config.exam.length);
+    row.innerHTML += `<td class="total">0</td>`;
+    row.innerHTML += `<td class="avg">0</td>`;
+
+    row.innerHTML += `<td class="grade-result">0</td>`; // Final Grade
+    row.innerHTML += `<td class="grade-result">0</td>`; // Equivalent
+    row.innerHTML += `<td>-</td>`; // Remarks
+
+    row.innerHTML += `
+    <td>
+        <button onclick="deleteRow(this)" class="delete-act" aria-label="Delete student">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </td>
+    `;
+
+    row.querySelectorAll("input").forEach((input, index) => {
+        input.value = scores[index] || "";
+    });
+
+    return row;
+}
+
+
+// ===== add students =====
+function addStudent() {
+    let rawName = document.getElementById("studentName").value.trim();
+    if (!rawName) return;
+    
+    let name = formatName(rawName);
+
+    let row = document.createElement("tr");
+
+    row.innerHTML = `<td class="row-number"></td><td>${name}</td>`;
+
+    createInputs(row, config.quiz.length);
+    row.innerHTML += `<td class="total">0</td>`;
+    row.innerHTML += `<td class="avg">0</td>`;
+
+    createInputs(row, config.lab.length);
+    row.innerHTML += `<td class="total">0</td>`;
+    row.innerHTML += `<td class="avg">0</td>`;
+
+    createInputs(row, config.assign.length);
+    row.innerHTML += `<td class="total">0</td>`;
+    row.innerHTML += `<td class="avg">0</td>`;
+
+    createInputs(row, config.att.length);
+    row.innerHTML += `<td class="total">0</td>`;
+    row.innerHTML += `<td class="avg">0</td>`;
+
+    createInputs(row, config.exam.length);
+    row.innerHTML += `<td class="total">0</td>`;
+    row.innerHTML += `<td class="avg">0</td>`;
+
+    row.innerHTML += `<td class="grade-result">0</td>`; // Final Grade
+    row.innerHTML += `<td class="grade-result">0</td>`; // Equivalent
+    row.innerHTML += `<td>-</td>`; // ✅ Remarks (IMPORTANT!)
+
+    row.innerHTML += `
+    <td>
+        <button onclick="deleteRow(this)" class="delete-act" aria-label="Delete student">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </td>
+    `;
+
+    document.getElementById("body").appendChild(row);
+
+    document.getElementById("studentName").value = "";
+
+    sortTable();
+    computeRow(row);
+    saveState();
+
+    document.getElementById("studentName").focus();
+}
+
+
+
+function formatName(name) {
+    return name
+        .toLowerCase()
+        .split(" ")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+}
+
+
+
+function deleteRow(btn) {
+    let row = btn.closest("tr");
+    row.remove();
+    saveState();
+    updateRowNumbers(); // ✅ ADD THIS
+}
+
+function createInputs(row, count) {
+    for (let i = 0; i < count; i++) {
+        let td = document.createElement("td");
+        td.innerHTML = `<input type="number" oninput="compute(this)">`;
+        row.appendChild(td);
+    }
+}
+
+function saveState() {
+    if (isLoadingSavedState) return;
+
+    const state = {
+        config: {
+            quiz: [...config.quiz],
+            lab: [...config.lab],
+            assign: [...config.assign],
+            att: [...config.att],
+            exam: [...config.exam]
+        },
+        students: Array.from(document.querySelectorAll("#body tr")).map(row => ({
+            name: row.children[1].textContent,
+            scores: getScoresFromRow(row)
+        }))
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadSavedState() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+
+    try {
+        const state = JSON.parse(saved);
+        if (!state || !state.config || !Array.isArray(state.students)) return;
+
+        isLoadingSavedState = true;
+
+        config = {
+            quiz: Array.isArray(state.config.quiz) ? state.config.quiz : [],
+            lab: Array.isArray(state.config.lab) ? state.config.lab : [],
+            assign: Array.isArray(state.config.assign) ? state.config.assign : [],
+            att: Array.isArray(state.config.att) ? state.config.att : [],
+            exam: Array.isArray(state.config.exam) ? state.config.exam : []
+        };
+
+        document.getElementById("body").innerHTML = "";
+        rebuildAssessmentHeaders();
+        updateColspan();
+        updateTotalHeaders();
+
+        state.students.forEach(student => {
+            if (!student.name) return;
+
+            const row = createStudentRow(student.name, Array.isArray(student.scores) ? student.scores : []);
+            document.getElementById("body").appendChild(row);
+        });
+
+        sortTable();
+        recomputeAllRows();
+        isLoadingSavedState = false;
+    } catch (error) {
+        console.error("Unable to load saved grade sheet.", error);
+        isLoadingSavedState = false;
+    }
+}
+
+function clearTableData() {
+    const shouldClear = confirm("Clear all assessment columns, student rows, and saved scores?");
+    if (!shouldClear) return;
+
+    config = {
+        quiz: [],
+        lab: [],
+        assign: [],
+        att: [],
+        exam: []
+    };
+
+    currentType = null;
+    document.getElementById("body").innerHTML = "";
+    document.getElementById("studentName").value = "";
+    closeModal();
+    closeReplaceExamModal();
+    rebuildAssessmentHeaders();
+    updateColspan();
+    updateTotalHeaders();
+    getExamAddButton().disabled = false;
+    localStorage.removeItem(STORAGE_KEY);
+}
+
+
+
+
+
+function removeExamColumns() {
+    const subHeader = document.getElementById("subHeader");
+    const examCount = config.exam.length;
+
+    if (!examCount) return;
+
+    const examHeaderStartIndex =
+        config.quiz.length + 2 +
+        config.lab.length + 2 +
+        config.assign.length + 2 +
+        config.att.length + 2;
+
+    for (let i = 0; i < examCount; i++) {
+        subHeader.removeChild(subHeader.children[examHeaderStartIndex]);
+    }
+
+    document.querySelectorAll("#body tr").forEach(row => {
+        const examStartIndex =
+            2 +
+            config.quiz.length + 2 +
+            config.lab.length + 2 +
+            config.assign.length + 2 +
+            config.att.length + 2;
+
+        for (let i = 0; i < examCount; i++) {
+            row.removeChild(row.children[examStartIndex]);
+        }
+    });
+
+    config.exam = [];
+    getExamAddButton().disabled = false;
+    updateColspan();
+    updateTotalHeaders();
+    recomputeAllRows();
+    saveState();
+}
+
+
+
+function showExamModal() {
+    currentType = "exam";
+    document.getElementById("modalTitle").innerText = "Add EXAM";
+    document.getElementById("modalText").innerText =
+        "Enter the total points for today's exam";
+    document.getElementById("modal").style.display = "flex";
+}
+
+function confirmReplaceExam() {
+    closeReplaceExamModal();
+    removeExamColumns();
+    showExamModal();
+}
+
+function closeReplaceExamModal() {
+    document.getElementById("replaceExamModal").style.display = "none";
+}
+
+
+
+// ===== SUBMIT ASSESSSMENT =====
+function submitAssessment() {
+    let total = parseFloat(document.getElementById("modalInput").value);
+    if (!total) return;
+
+    config[currentType].push(total);
+
+    
+
+    const subHeader = document.getElementById("subHeader");
+    const groupOrder = ["quiz", "lab", "assign", "att", "exam"];
+    const groupIndex = groupOrder.indexOf(currentType);
+
+    let avgCellIndex = 0;
+    for (let i = 0; i < groupIndex; i++) {
+        avgCellIndex += config[groupOrder[i]].length + 2;
+    }
+    avgCellIndex += config[currentType].length - 1;
+
+    let th = createAssessmentHeader(currentType, total, config[currentType].length);
+
+    subHeader.insertBefore(th, subHeader.children[avgCellIndex]);
+
+    updateColspan();
+    updateTotalHeaders();
+    updateRows(currentType);
+    recomputeAllRows();
+    saveState();
+    closeModal();
+}
+
+
+
+
+// ===== COMPUTATION =====
+
+function compute(input) {
+    let row = input.closest("tr");
+    computeRow(row);
+    saveState();
+}
+
+function computeRow(row) {
+    let inputs = row.querySelectorAll("input");
+
+    let i = 0;
+
+    const weights = {
+        quiz: 0.20,
+        lab: 0.30,
+        assign: 0.10,
+        att: 0.10,
+        exam: 0.30
+    };
+
+    function calc(group, weight, totalCellIndex, avgCellIndex) {
+        let rawTotal = 0;
+        let percentTotal = 0;
+
+        for (let j = 0; j < group.length; j++) {
+            let val = parseFloat(inputs[i]?.value) || 0;
+            
+            // 🚫 LIMIT TO MAX SCORE
+            if (val > group[j]) {
+                val = group[j];
+                inputs[i].value = group[j]; // auto-correct UI
+                inputs[i].style.border = "2px solid red";
+            } else {
+                inputs[i].style.border = "";
+            }
+
+            // 🚫 PREVENT NEGATIVE
+            if (val < 0) {
+                val = 0;
+                inputs[i].value = 0;
+            }
+
+            rawTotal += val;
+            percentTotal += (val / group[j]) * 100;
+            i++;
+        }
+
+        let avg = group.length ? percentTotal / group.length : 0;
+        let weighted = avg * weight;
+
+        row.children[totalCellIndex].textContent = rawTotal.toFixed(2);
+        row.children[avgCellIndex].textContent = weighted.toFixed(2);
+        return weighted;
+    }
+
+    let colIndex = 2;
+    let final = 0;
+
+    final += calc(config.quiz, weights.quiz, colIndex + config.quiz.length, colIndex + config.quiz.length + 1);
+    colIndex += config.quiz.length + 2;
+
+    final += calc(config.lab, weights.lab, colIndex + config.lab.length, colIndex + config.lab.length + 1);
+    colIndex += config.lab.length + 2;
+
+    final += calc(config.assign, weights.assign, colIndex + config.assign.length, colIndex + config.assign.length + 1);
+    colIndex += config.assign.length + 2;
+
+    final += calc(config.att, weights.att, colIndex + config.att.length, colIndex + config.att.length + 1);
+    colIndex += config.att.length + 2;
+
+    final += calc(config.exam, weights.exam, colIndex + config.exam.length, colIndex + config.exam.length + 1);
+
+    let finalIndex = row.children.length - 4;
+    let equivIndex = row.children.length - 3;
+    let remarksIndex = row.children.length - 2;
+
+    row.children[finalIndex].textContent = final.toFixed(2);
+
+    let equiv = 5.0;
+
+    if (final >= 97) equiv = 1.0;
+    else if (final >= 94) equiv = 1.25;
+    else if (final >= 91) equiv = 1.5;
+    else if (final >= 88) equiv = 1.75;
+    else if (final >= 85) equiv = 2.0;
+    else if (final >= 82) equiv = 2.25;
+    else if (final >= 79) equiv = 2.5;
+    else if (final >= 76) equiv = 2.75;
+    else if (final >= 75) equiv = 3.0;
+    else equiv = 5.0;
+
+    row.children[equivIndex].textContent = equiv.toFixed(2);
+
+    let remarksCell = row.children[remarksIndex];
+
+    if (final >= 75) {
+        remarksCell.textContent = "Passed";
+        remarksCell.className = "passed";
+    } else {
+        remarksCell.textContent = "Failed";
+        remarksCell.className = "failed";
+    }
+}
+
+function recomputeAllRows() {
+    document.querySelectorAll("#body tr").forEach(row => computeRow(row));
+}
+
+// AUTO SCROLL INPUT INTO VIEW (MOBILE FIX)
+document.addEventListener("focusin", function(e) {
+    if (e.target.tagName === "INPUT") {
+        setTimeout(() => {
+            e.target.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        }, 200); // wait for keyboard to open
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    loadSavedState();
+
+    document.getElementById("modalInput").addEventListener("keydown", function(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            submitAssessment();
+        }
+    });
+});
 
 </script>
 
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle">Add Assessment</h3>
+        <p id="modalText"></p>
+        <input type="number" id="modalInput" placeholder="Enter total points">
+        <br><br>
+        <button class="btn" onclick="submitAssessment()">Add</button>
+        <button class="btn"onclick="closeModal()" style="background:#604e6f;">Cancel</button>
+    </div>
+</div>
+
+<div id="replaceExamModal" class="modal">
+    <div class="modal-content">
+        <h3>Replace Major Exam</h3>
+        <p id="replaceExamMessage">Major Exam already exists. Do you want to replace it?</p>
+        <button type="button" onclick="confirmReplaceExam()">Replace</button>
+        <button type="button" onclick="closeReplaceExamModal()" style="background:#6b7280;">Cancel</button>
+    </div>
+</div>
+
 </body>
+
 </html>
+                
